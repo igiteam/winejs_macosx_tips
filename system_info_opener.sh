@@ -1,13 +1,13 @@
 #!/bin/bash
-# AirdropOpener — menu-bar app. Click icon → Finder opens AirDrop.
+# SystemInfoOpener — menu-bar app. Click icon → Finder opens System Information.
 # Uses the real app icon in the menu bar. No AppleScript — shells out to `open`.
 
 set -e
 
-APP_NAME="AirdropOpener"
-BUNDLE_ID="com.igiteam.airdropopener"
+APP_NAME="SystemInfoOpener"
+BUNDLE_ID="com.igiteam.systeminfoopener"
 SIGN_IDENTITY="MXFlowLocal"
-LOG_FILE="$HOME/Library/Logs/AirdropOpener.log"
+LOG_FILE="$HOME/Library/Logs/SystemInfoOpener.log"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -17,7 +17,7 @@ NC='\033[0m'
 
 echo -e "${CYAN}"
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║  AIRDROP OPENER — click menu bar icon → Finder opens AirDrop   ║"
+echo "║  SYSTEM INFO OPENER — click menu bar icon → System Info opens  ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
@@ -32,14 +32,14 @@ cd "$APP_NAME" || exit
 echo -e "${CYAN}🎨 Getting icon...${NC}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOCAL_ICON="$SCRIPT_DIR/airdrop-macbook.png"
-ICON_URL="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/airdrop-macbook.png"
+LOCAL_ICON="$SCRIPT_DIR/system-info-macbook.png"
+ICON_URL="https://raw.githubusercontent.com/igiteam/z_macosx_tips/refs/heads/main/system_info_macosx.png"
 
 if [ -f "$LOCAL_ICON" ] && [ -s "$LOCAL_ICON" ]; then
     echo "✅ Using local icon: $LOCAL_ICON"
     cp "$LOCAL_ICON" "public/app_icon.png"
 else
-    echo "   No local airdrop-macbook.png next to this script — downloading..."
+    echo "   No local system-info-macbook.png next to this script — downloading..."
     curl -f -s -L "$ICON_URL" -o "public/app_icon.png" || true
 fi
 
@@ -81,36 +81,36 @@ fi
 # SOURCE
 # ===============================================
 
-cat > "src/AirDropOpener.h" << 'EOF'
+cat > "src/SystemInfoOpener.h" << 'EOF'
 #import <Foundation/Foundation.h>
-@interface AirDropOpener : NSObject
-- (BOOL)openAirDropWithError:(NSString **)errorOut;
+@interface SystemInfoOpener : NSObject
+- (BOOL)openSystemInfoWithError:(NSString **)errorOut;
 @end
 EOF
 
-cat > "src/AirDropOpener.m" << 'EOF'
-#import "AirDropOpener.h"
+cat > "src/SystemInfoOpener.m" << 'EOF'
+#import "SystemInfoOpener.h"
 #import <AppKit/AppKit.h>
 
-@implementation AirDropOpener
+@implementation SystemInfoOpener
 
-- (BOOL)openAirDropWithError:(NSString **)errorOut {
-    // Path to the AirDrop.app that lives inside Finder.app.
+- (BOOL)openSystemInfoWithError:(NSString **)errorOut {
+    // Path to System Information.app.
     // Launching it with /usr/bin/open is exactly what double-clicking it does.
-    NSString *airdropPath =
-        @"/System/Library/CoreServices/Finder.app/Contents/Applications/AirDrop.app";
+    NSString *systemInfoPath =
+        @"/System/Applications/Utilities/System Information.app";
 
-    if (![[NSFileManager defaultManager] fileExistsAtPath:airdropPath]) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:systemInfoPath]) {
         if (errorOut) {
             *errorOut = [NSString stringWithFormat:
-                @"AirDrop.app not found at expected path:\n%@", airdropPath];
+                @"System Information.app not found at expected path:\n%@", systemInfoPath];
         }
         return NO;
     }
 
     NSTask *task = [[NSTask alloc] init];
     task.launchPath = @"/usr/bin/open";
-    task.arguments  = @[airdropPath];
+    task.arguments  = @[systemInfoPath];
 
     @try {
         [task launch];
@@ -142,17 +142,17 @@ EOF
 
 cat > "src/AppDelegate.m" << 'EOF'
 #import "AppDelegate.h"
-#import "AirDropOpener.h"
+#import "SystemInfoOpener.h"
 
 @interface AppDelegate ()
 @property (nonatomic, strong) NSStatusItem *statusItem;
-@property (nonatomic, strong) AirDropOpener *opener;
+@property (nonatomic, strong) SystemInfoOpener *opener;
 @end
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    self.opener = [[AirDropOpener alloc] init];
+    self.opener = [[SystemInfoOpener alloc] init];
 
     self.statusItem = [[NSStatusBar systemStatusBar]
                        statusItemWithLength:NSVariableStatusItemLength];
@@ -164,9 +164,9 @@ cat > "src/AppDelegate.m" << 'EOF'
         icon.size = NSMakeSize(22, 22);
         self.statusItem.button.image = icon;
         self.statusItem.button.imagePosition = NSImageOnly;
-        self.statusItem.button.toolTip = @"Open AirDrop";
+        self.statusItem.button.toolTip = @"Open System Information";
     } else {
-        self.statusItem.button.title = @"🖱";  // last-resort fallback
+        self.statusItem.button.title = @"🖥";  // last-resort fallback
     }
 
     // Left click AND right click both fire the same action.
@@ -196,12 +196,12 @@ cat > "src/AppDelegate.m" << 'EOF'
 
 - (void)statusItemClicked:(id)sender {
     NSString *err = nil;
-    BOOL ok = [self.opener openAirDropWithError:&err];
+    BOOL ok = [self.opener openSystemInfoWithError:&err];
     if (!ok) {
-        NSLog(@"[AirDropOpener] %@", err);
+        NSLog(@"[SystemInfoOpener] %@", err);
         dispatch_async(dispatch_get_main_queue(), ^{
             NSAlert *a = [[NSAlert alloc] init];
-            a.messageText = @"Couldn't open AirDrop";
+            a.messageText = @"Couldn't open System Information";
             a.informativeText = err ?: @"Unknown error.";
             [a addButtonWithTitle:@"OK"];
             [a runModal];
@@ -243,7 +243,7 @@ cat > "Info.plist" << EOF
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key><string>$APP_NAME</string>
-    <key>CFBundleDisplayName</key><string>AirDrop Opener</string>
+    <key>CFBundleDisplayName</key><string>System Info Opener</string>
     <key>CFBundleIdentifier</key><string>$BUNDLE_ID</string>
     <key>CFBundleVersion</key><string>1.0</string>
     <key>CFBundleShortVersionString</key><string>1.0</string>
@@ -315,12 +315,12 @@ echo -e "${CYAN}"
 echo "╔════════════════════════════════════════════════════════════════╗"
 echo "║                          HOW TO USE                            ║"
 echo "╠════════════════════════════════════════════════════════════════╣"
-echo "║  1. Look at your MENU BAR (top right) for the AirDrop icon.   ║"
+echo "║  1. Look at your MENU BAR (top right) for the System Info icon.║"
 echo "║  2. Click it — LEFT or RIGHT, either works.                   ║"
-echo "║  3. Finder opens its AirDrop window.                          ║"
+echo "║  3. Finder opens System Information.                          ║"
 echo "║                                                                ║"
 echo "║  No permissions required — this just runs:                    ║"
-echo "║    open /System/Library/CoreServices/Finder.app/…/AirDrop.app  ║"
+echo "║    open /System/Applications/Utilities/System Information.app  ║"
 echo "║                                                                ║"
 echo "║  Log: cat $LOG_FILE"
 echo "╚════════════════════════════════════════════════════════════════╝"
