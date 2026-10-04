@@ -6,7 +6,7 @@ set -e
 
 APP_NAME="SystemInfoOpener"
 BUNDLE_ID="com.igiteam.systeminfoopener"
-SIGN_IDENTITY="MXFlowLocal"
+SIGN_IDENTITY="IGITEAM"
 LOG_FILE="$HOME/Library/Logs/SystemInfoOpener.log"
 
 RED='\033[0;31m'

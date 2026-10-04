@@ -6,7 +6,7 @@ set -e
 
 APP_NAME="AirdropOpener"
 BUNDLE_ID="com.igiteam.airdropopener"
-SIGN_IDENTITY="MXFlowLocal"
+SIGN_IDENTITY="IGITEAM"
 LOG_FILE="$HOME/Library/Logs/AirdropOpener.log"
 
 RED='\033[0;31m'
