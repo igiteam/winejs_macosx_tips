@@ -19,7 +19,8 @@
     // ---- Menu bar image: use the app icon ----
     NSImage *icon = [self menuBarIcon];
     if (icon) {
-        icon.template = NO;                  // keep original colors
+        // icon.template = NO;                  // keep original colors
+        icon.template = YES;   // let macOS adapt to light/dark menu bar
         icon.size = NSMakeSize(18, 18);      // square, fits menu bar height
         self.statusItem.button.image = icon;
         self.statusItem.button.imagePosition = NSImageOnly;

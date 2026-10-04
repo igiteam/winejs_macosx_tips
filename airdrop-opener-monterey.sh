@@ -34,6 +34,7 @@ echo -e "${CYAN}🎨 Getting icon...${NC}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_ICON="$SCRIPT_DIR/airdrop-macbook.png"
 ICON_URL="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/airdrop-macbook.png"
+ICON_UR_2L="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/airdrop-macbook.png"
 
 if [ -f "$LOCAL_ICON" ] && [ -s "$LOCAL_ICON" ]; then
     echo "✅ Using local icon: $LOCAL_ICON"
@@ -143,7 +144,8 @@ cat > "src/AppDelegate.m" << 'EOF'
     // ---- Menu bar image: use the app icon ----
     NSImage *icon = [self menuBarIcon];
     if (icon) {
-        icon.template = NO;                  // keep original colors
+        // icon.template = NO;                  // keep original colors
+        icon.template = YES;   // let macOS adapt to light/dark menu bar
         icon.size = NSMakeSize(18, 18);      // square, fits menu bar height
         self.statusItem.button.image = icon;
         self.statusItem.button.imagePosition = NSImageOnly;

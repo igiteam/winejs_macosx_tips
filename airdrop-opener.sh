@@ -160,7 +160,8 @@ cat > "src/AppDelegate.m" << 'EOF'
     // Menu bar image: use the app icon, sized for the menu bar.
     NSImage *icon = [self menuBarIcon];
     if (icon) {
-        icon.template = NO;                // keep original colors
+        // icon.template = NO;                  // keep original colors
+        icon.template = YES;   // let macOS adapt to light/dark menu bar
         icon.size = NSMakeSize(22, 22);
         self.statusItem.button.image = icon;
         self.statusItem.button.imagePosition = NSImageOnly;
